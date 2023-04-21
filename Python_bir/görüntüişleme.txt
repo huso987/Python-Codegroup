@@ -1,0 +1,465 @@
+
+import cv2
+import matplotlib.pyplot as plt
+
+# histogram hesapama ama fonksiyon ile
+img=cv2.imread('deneme.jpg',0)
+
+hist=cv2.calcHist([img],[0],None,[256],[0,256])
+
+plt.plot(hist)
+plt.title("histogram")
+plt.xlabel("pixel degerleri")
+plt.ylabel("pixel sayısı")
+plt.show()
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------
+import numpy as np
+import cv2
+import matplotlib.pyplot as plt
+
+img=cv2.imread('deneme.jpg')
+# histogram hesaplama ama for döngüsü ile
+histsize=256
+histrange=(0,256)
+hist=np.zeros(histsize, dtype=np.int)
+
+for pixelval in img.ravel():
+    hist[pixelval] += 1
+
+
+plt.plot(hist)
+plt.title("histogram")
+plt.show()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-----------------------------------------------------------------------
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Resmi yükleyin (32 bit derinliğiyle)
+img = cv2.imread('deneme1.jpg')
+
+# Histogram aralıklarını belirleyin
+bins = np.linspace(0, 2**32, num=256)
+
+# Histogramı hesaplayın
+hist, edges = np.histogram(img.ravel(), bins=bins)
+
+# Histogram grafiğini çizin
+plt.bar(edges[:-1], hist, width=np.diff(edges), align='edge')
+plt.xlabel('Piksel Değeri')
+plt.ylabel('Piksel Sayısı')
+plt.title('32 Bitlik Resmin Histogramı')
+
+plt.show()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-----------------------------------------------------------------------------
+import cv2
+import matplotlib.pyplot as plt
+
+# Resmi yükle
+img = cv2.imread('deneme.jpg')
+
+# Renk kanallarına ayır
+r=img[:,:,2]
+g=img[:,:,1]
+b=img[:,:,0]
+
+#b,g,r=cv2.split(img)
+# Histogramları hesapla
+hist_b = cv2.calcHist([b], [0], None, [256], [0, 256])
+hist_g = cv2.calcHist([g], [0], None, [256], [0, 256])
+hist_r = cv2.calcHist([r], [0], None, [256], [0, 256])
+
+# Histogram grafiklerini çiz
+plt.plot(hist_b, color='b')
+plt.plot(hist_g, color='g')
+plt.plot(hist_r, color='r')
+plt.xlabel('Piksel Değeri')
+plt.ylabel('Piksel Sayısı')
+plt.title('RGB Histogramları')
+plt.xlim([0, 256])
+plt.show()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------------------------
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Resmi yükle
+img = cv2.imread('deneme.png', 0)
+
+# Histogramı hesapla
+hist, bins = np.histogram(img.flatten(), 256, [0, 256])
+
+# Kumulatif histogramı hesapla
+cumulative_hist = np.cumsum(hist)
+
+# Kumulatif histogram grafiği
+plt.plot(cumulative_hist)
+
+# Grafik başlığı ve ekseni etiketleri
+plt.title('Kumulatif Histogram')
+plt.xlabel('Piksel Değerleri')
+plt.ylabel('Kümülatif Sayı')
+
+plt.show()
+----------------------------------------------------------------------------------------
+import cv2
+
+# Resmi yükle
+img = cv2.imread('deneme.png',0)
+
+# Parlaklık arttırma
+bright_img = cv2.add(img, -30)
+
+# Orijinal ve parlaklık arttırılmış resimleri göster
+cv2.imshow('Orijinal Resim', img)
+cv2.imshow('Parlaklık Arttırılmış Resim', bright_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+--------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# Resmi yükle
+img = cv2.imread('deneme.png')
+
+# Çarpanı tanımla
+alpha = 0.5
+
+# Çarpma işlemi
+bright_img = np.clip(alpha * img, 0, 255).astype('uint8')
+
+# Orijinal ve parlaklık arttırılmış resimleri göster
+cv2.imshow('Orijinal Resim', img)
+cv2.imshow('Parlaklık Arttırılmış Resim', bright_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# Resmi yükle
+img = cv2.imread('deneme.png')
+
+# Resmin boyutunu al
+row, col, ch = img.shape
+
+# Gürültü eklemek için yeni bir numpy dizisi oluştur
+noisy_img = np.zeros((row, col, ch), np.uint8)
+
+# Rastgele seçilen pikselleri siyah veya beyaz yaparak gürültü eklemek
+for i in range(row):
+    for j in range(col):
+        rdn = np.random.random()
+        if rdn < 0.05:
+            noisy_img[i][j] = [0, 0, 0]
+        elif rdn > 0.95:
+            noisy_img[i][j] = [255, 255, 255]
+        else:
+            noisy_img[i][j] = img[i][j]
+
+# Gürültülü resmi kaydet
+cv2.imshow('gurultulu_resim.jpg', noisy_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# resmi oku ve diziye dönüştür
+img = cv2.imread('deneme.png')
+img = np.array(img)
+
+# Gaussian gürültüsü ekle
+mean = 0
+var = 25
+sigma = var ** 0.5
+gaussian = np.random.normal(mean, sigma, (img.shape[0], img.shape[1], img.shape[2]))
+gaussian = gaussian.reshape(img.shape[0], img.shape[1], img.shape[2]).astype('uint8')
+noisy_image = cv2.addWeighted(img, 0.5, gaussian, 0.5, 0)
+
+# gürültülü resmi göster
+cv2.imshow('Noisy Image', noisy_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-------------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# İki resmi yükleme
+img1 = cv2.imread('deneme.png', cv2.IMREAD_GRAYSCALE)
+img2 = cv2.imread('denme.png', cv2.IMREAD_GRAYSCALE)
+
+# İki resmi binary formata dönüştürme
+_, img1_binary = cv2.threshold(img1, 127, 255, cv2.THRESH_BINARY)
+_, img2_binary = cv2.threshold(img2, 127, 255, cv2.THRESH_BINARY)
+
+# İki resmi binary AND işlemiyle birleştirme
+result = cv2.bitwise_and(img1_binary, img2_binary)
+#result = cv2.bitwise_or(img1_binary, img2_binary)
+# Sonucu gösterme
+cv2.imshow('Binary AND', result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-------------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+#normal resimden noisy olan resim çıkartınca noisy miktarı çıkar
+peppers = cv2.imread('deneme.png')
+noisy_peppers = np.uint8(np.clip(peppers + 25 * np.random.randn(*peppers.shape), 0, 255))
+diff_img = cv2.absdiff(peppers, noisy_peppers)
+
+plt.figure(figsize=(12, 4))
+plt.subplot(1, 3, 1), plt.imshow(cv2.cvtColor(peppers, cv2.COLOR_BGR2RGB)), plt.title('Original Image')
+plt.subplot(1, 3, 2), plt.imshow(cv2.cvtColor(noisy_peppers, cv2.COLOR_BGR2RGB)), plt.title('Noisy Image')
+plt.subplot(1, 3, 3), plt.imshow(cv2.cvtColor(diff_img, cv2.COLOR_BGR2RGB)), plt.title('Absolute Difference')
+plt.show()
+----------------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Resmi yükle
+img = cv2.imread('deneme.png')
+
+# Logaritmik dönüşüm parametresi
+c = 2
+
+# Resmi double formatına dönüştür
+img_double = np.double(img)
+
+# Logaritmik dönüşüm
+log_transformed = c * np.log(1 + img_double)
+
+# Ölçekleme (0-255)
+log_transformed = np.uint8(255*log_transformed/log_transformed.max())
+
+# Sonuçları görselleştirme
+plt.subplot(121),plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+plt.title('Orijinal Resim'), plt.xticks([]), plt.yticks([])
+plt.subplot(122),plt.imshow(cv2.cvtColor(log_transformed, cv2.COLOR_BGR2RGB))
+plt.title('Logaritmik Dönüşüm'), plt.xticks([]), plt.yticks([])
+plt.show()
+-----------------------------------------------------------------------------------------------
+from skimage import io, exposure
+import matplotlib.pyplot as plt
+
+
+img = io.imread('deneme.png')
+#yeğinlik ölçekleme
+
+# Define the minimum and maximum values
+min_value = 0
+max_value = 50
+
+# Clamp the pixel values using the exposure.rescale_intensity function
+img_clamped = exposure.rescale_intensity(img, in_range=(min_value/255, max_value/255), out_range=(0, 1))
+
+# Display the original and clamped images side by side
+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(10, 5))
+ax0.imshow(img, cmap='gray')
+ax0.set_title('Original')
+ax0.axis('off')
+ax1.imshow(img_clamped, cmap='gray')
+ax1.set_title('Clamped')
+ax1.axis('off')
+
+plt.show()
+---------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# Resmi okuyun
+img = cv2.imread('deneme.png')
+
+# Görüntüyü ters çevirin
+#2^8 -1 =255
+img_inverted = 255 - img
+
+# Ters çevrilen görüntüyü gösterin
+cv2.imshow('Inverted Image', img_inverted)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+--------------------------------------------------------------------------------------------
+import cv2
+
+img = cv2.imread('deneme.png') # Resmi yükle
+gamma = 1.5 # Gamma değeri
+img_gamma = img ** (1/gamma) # Gamma dönüşümü
+
+# İki görüntüyü yan yana göster
+cv2.imshow('Original Image', img)
+cv2.imshow('Gamma-Transformed Image (gamma=1.5)', img_gamma)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+--------------------------------------------------------------------------------------------
+import cv2
+
+# Görüntüyü yükle
+img = cv2.imread('deneme.png', cv2.IMREAD_GRAYSCALE)
+
+# Eşik değerini belirle
+threshold_value = 150
+#binary eşik
+
+# Görüntüyü eşikle
+ret, thresholded_img = cv2.threshold(img, threshold_value, 255, cv2.THRESH_BINARY)
+
+# Eşiklenmiş görüntüyü göster
+cv2.imshow('Thresholded Image', thresholded_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-----------------------------------------------------------------------------------------
+import cv2
+
+# Load the image in grayscale
+img = cv2.imread('deneme.png',0)
+
+# Apply adaptive thresholding with a block size of 11 and a constant value of 2
+img_thresholded = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
+
+# Display the original and thresholded images
+cv2.imshow('Original', img)
+cv2.imshow('Adaptive Thresholded', img_thresholded)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+--------------------------------------------------------------------------------------------
+import cv2
+
+# Load the image
+img = cv2.imread('deneme.png',0)
+
+# Apply Otsu thresholding
+_, thresh = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+# Display the original and thresholded images
+cv2.imshow('Original', img)
+cv2.imshow('Thresholded', thresh)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+#intensity windowing
+img = cv2.imread('deneme.png')
+window_center = 128
+window_width = 64
+img_adjusted = cv2.normalize(img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+img_adjusted = cv2.convertScaleAbs(img_adjusted, alpha=window_width/255, beta=window_center-window_width/2)
+
+cv2.imshow('Original Image', img)
+cv2.imshow('Adjusted Image', img_adjusted)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-----------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+
+#kontrast genişletme
+img = cv2.imread('huso2.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Determine the intensity range for contrast stretching using np.percentile
+low, high = np.percentile(img, (2, 98))
+img_stretched = cv2.normalize(img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
+# Perform contrast stretching
+img_stretched = cv2.equalizeHist(img_stretched)
+
+# Display the original image and the stretched image
+cv2.imshow('Original Image', img)
+cv2.imshow('Stretched Image', img_stretched)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+-----------------------------------------------------------------------------------------------
+import cv2
+
+# Resmi yükle
+img = cv2.imread('deneme.png')
+img1= cv2.imread('denme.png')
+
+bright_img = cv2.add(img1, -img)
+
+#İki fotoğrafı birbirinden çıkarma
+cv2.imshow('Orijinal Resim 1', img1)
+cv2.imshow('Orijinal Resim', img)
+cv2.imshow('Çıkarma İşeminden sonraki resim', bright_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------------------------------------
+import cv2
+import numpy as np
+
+# Load the image in grayscale
+img = cv2.imread('deneme.png')
+
+# Define the gamma value
+gamma = 1.3
+
+# Perform gamma transformation
+img_gamma = np.power(img, gamma)
+
+# Normalize the image to 0-255 range
+img_gamma = cv2.normalize(img_gamma, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8UC1)
+
+# Display the original and gamma transformed images
+cv2.imshow('Original', img)
+cv2.imshow('Gamma Transformed', img_gamma)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+----------------------------------------------------------------------------------------------
+import cv2
+
+# Load the image
+img = cv2.imread('huso2.jpg')
+
+# Set window center and width values
+window_center = 128
+window_width = 64
+
+# Apply intensity windowing using cv2.normalize function
+min_value = window_center - window_width/2
+max_value = window_center + window_width/2
+img_windowed = cv2.normalize(img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
+# Display the original and windowed images
+cv2.imshow('Original Image', img)
+cv2.imshow('Windowed Image', img_windowed)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+---------------------------------------------------------------------------------------------------
+
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+# Load the "pout.tif" image
+img = cv2.imread('huso2.jpg',0)
+
+# Set the threshold range for gray level slicing
+threshold_low = 80
+threshold_high = 200
+
+# Create a binary mask based on the threshold range
+mask = np.logical_and(img >= threshold_low, img <= threshold_high)
+
+# Apply gray level slicing to the image
+img_sliced = img.copy()
+img_sliced[mask] = 255
+
+# Display the original and gray level sliced images
+fig, (ax1, ax2) = plt.subplots(1, 2)
+ax1.imshow(img, cmap='gray')
+ax1.set_title('Original Image')
+ax2.imshow(img_sliced, cmap='gray')
+ax2.set_title('Gray Level Sliced Image')
+plt.show()
+-----------------------------------------------------------------------------------
