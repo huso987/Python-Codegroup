@@ -11,4 +11,4 @@ py dosyaları ve işlevleri
 5) egitim.py =Kumulatif histogram grafiği
 6) deneme1.py = iki fotoğrafı birbirinden çıkarma yada sayısal değer çıkarma toplama
 7) deneme2.py = bir fotoğrafı sabit sayı ile çarpma
-8) 
+8) deneme3.py = bir fotoğrafa noisy eklemek
